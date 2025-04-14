@@ -1,55 +1,268 @@
-export const Header = () => {
+import React, { useState, useEffect, useRef } from "react";
+
+interface HeaderProps {
+  onMenuClick: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showMessages, setShowMessages] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(false);
+
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const quickActionsRef = useRef<HTMLDivElement>(null);
+
+  // Close any open panel if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target as Node)
+      ) {
+        setShowNotifications(false);
+      }
+      if (
+        messagesRef.current &&
+        !messagesRef.current.contains(event.target as Node)
+      ) {
+        setShowMessages(false);
+      }
+      if (
+        quickActionsRef.current &&
+        !quickActionsRef.current.contains(event.target as Node)
+      ) {
+        setShowQuickActions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleNotifications = () => {
+    setShowNotifications((prev) => !prev);
+    setShowMessages(false);
+    setShowQuickActions(false);
+  };
+
+  const toggleMessages = () => {
+    setShowMessages((prev) => !prev);
+    setShowNotifications(false);
+    setShowQuickActions(false);
+  };
+
+  const toggleQuickActions = () => {
+    setShowQuickActions((prev) => !prev);
+    setShowNotifications(false);
+    setShowMessages(false);
+  };
+
   return (
-    <header className="border-b-[color:var(--Grey-2,#E6E6E6)] bg-white w-full overflow-hidden px-[21px] py-[41px] rounded-[8px_0px_0px_0px] border-b border-solid">
-      <div className="gap-5 flex">
-        <div className="w-[17%]">
-          <div className="text-[#808080] text-xl font-medium leading-[1.3] tracking-[-0.4px] mt-3">
-            Welcome, <span className="text-[#1A011E]">Wisdom</span>
+    <header className="flex items-center justify-between border-b border-[#E6E6E6] bg-white px-2 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 h-[56px] sm:h-[60px] md:h-[64px]">
+      {/* Left side: Logo and Welcome Message */}
+      <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-shrink-0">
+        <button
+          onClick={onMenuClick}
+          className="p-1.5 hover:bg-[#F9F5FA] rounded-lg transition-colors md:hidden"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3 12H21M3 6H21M3 18H21"
+              stroke="#1A011E"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+        <div
+          className="flex items-center cursor-pointer transition-transform duration-300 hover:scale-105"
+          onClick={() => (window.location.href = "/")}
+        >
+          <img
+            src="/image 1.png"
+            alt="Logo"
+            className="h-[36px] sm:h-[42px] md:h-[48px] w-auto object-contain"
+          />
+        </div>
+        <div className="text-[#808080] text-xs sm:text-sm font-medium tracking-[-0.4px]">
+          Welcome, <span className="text-[#1A011E]">Wisdom</span>
+        </div>
+      </div>
+
+      {/* Right side: Search bar and interactive icons */}
+      <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+        {/* Search Bar (hidden on very small screens) */}
+        <div className="relative hidden sm:flex-1 sm:block w-[398px] mx-2 sm:mx-4">
+          <div className="flex items-center border border-[#F2F2F2] bg-[#FAFAFA] rounded-lg px-2 sm:px-2.5 md:px-3 py-1 gap-1.5 sm:gap-2 focus-within:border-[#6B047C] transition-colors w-full">
+            <img
+              src="/search-01.svg"
+              alt="Search icon"
+              className="w-4 sm:w-5 h-4 sm:h-5"
+            />
+            <input
+              type="text"
+              placeholder="Search"
+              className="w-full bg-transparent border-none outline-none text-sm sm:text-base text-[#808080] placeholder:text-[#808080]"
+            />
           </div>
         </div>
 
-        <div className="w-[83%]">
-          <div className="flex w-full items-stretch gap-[40px_69px] flex-wrap">
-            <div className="items-center border border-[color:var(--Grey-1,#F2F2F2)] bg-neutral-50 flex gap-2.5 text-xs text-[#CCC] font-medium whitespace-nowrap tracking-[-0.24px] leading-[1.3] grow shrink basis-auto my-auto px-2 py-2.5 rounded-lg border-solid">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets/6d6775384ccd46a982a7cf80d05dc013/e99240e643f1081069ed54d43c2dd52d09d4a813?placeholderIfAbsent=true"
-                className="aspect-[1] object-contain w-4 self-stretch shrink-0 my-auto"
-                alt=""
-              />
-              <div className="self-stretch my-auto">Search</div>
-            </div>
-
-            <div className="flex items-center gap-8 grow shrink basis-auto">
-              <div className="self-stretch flex items-center gap-4 my-auto">
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/6d6775384ccd46a982a7cf80d05dc013/13e6603600c3da4a1ee847fc722705b7e606fd32?placeholderIfAbsent=true"
-                  className="aspect-[1] object-contain w-10 self-stretch shrink-0 my-auto"
-                  alt=""
-                />
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/6d6775384ccd46a982a7cf80d05dc013/223e0e68f3d0fbcae82f9d1a6da7d9a9acb992cb?placeholderIfAbsent=true"
-                  className="aspect-[1] object-contain w-10 self-stretch shrink-0 my-auto"
-                  alt=""
-                />
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/6d6775384ccd46a982a7cf80d05dc013/0e3e81f49673001f85dfba73457774a0c75caf12?placeholderIfAbsent=true"
-                  className="aspect-[1] object-contain w-10 self-stretch shrink-0 my-auto rounded-lg"
-                  alt=""
-                />
+        {/* Notifications Icon */}
+        <div ref={notificationsRef} className="relative">
+          <button
+            aria-label="Notifications"
+            className="relative p-1.5 sm:p-2 hover:bg-[#F9F5FA] rounded-lg transition-colors"
+            onClick={toggleNotifications}
+          >
+            <img
+              src="/notification-02.svg"
+              alt="Notifications"
+              className="w-4 sm:w-5 h-4 sm:h-5"
+            />
+            <span className="absolute -top-1 -right-1 w-3.5 sm:w-4 h-3.5 sm:h-4 bg-red-500 text-white text-[8px] sm:text-[10px] flex items-center justify-center rounded-full">
+              2
+            </span>
+          </button>
+          {showNotifications && (
+            <div
+              className="absolute right-0 top-full mt-2 w-[16rem] sm:w-[20rem] bg-white rounded-lg shadow-lg py-3 px-3 sm:py-4 sm:px-4 z-50"
+            >
+              {/* Heading uses nowrap to avoid splitting into single characters */}
+              <div className="text-[#6B047C] font-medium mb-2 text-sm whitespace-nowrap">
+                Notifications
               </div>
-
-              <button className="justify-center items-center border border-[color:var(--Foundation-Purple-Normal,#6B047C)] self-stretch flex gap-2 text-base text-[#6B047C] font-medium tracking-[-0.32px] my-auto p-2 rounded-lg border-solid">
-                <span>Quick actions</span>
-                <img
-                  src="https://cdn.builder.io/api/v1/image/assets/6d6775384ccd46a982a7cf80d05dc013/ef84c47373aeebabba7abe3e3724c77127014c40?placeholderIfAbsent=true"
-                  className="aspect-[2] object-contain w-8 self-stretch shrink-0 my-auto"
-                  alt=""
-                />
-              </button>
+              {/* Notification items use normal whitespace and break-words */}
+              <div className="space-y-2 text-sm whitespace-normal break-words">
+                <div>
+                  Notification item 1 with some long text to test wrapping.
+                </div>
+                <div>
+                  Notification item 2 with additional text content to ensure proper fitting.
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+        </div>
+
+        {/* Messages Icon */}
+        <div ref={messagesRef} className="relative">
+          <button
+            aria-label="Messages"
+            className="relative p-1.5 sm:p-2 hover:bg-[#F9F5FA] rounded-lg transition-colors"
+            onClick={toggleMessages}
+          >
+            <img
+              src="/system-uicons_message.svg"
+              alt="Messages"
+              className="w-4 sm:w-5 h-4 sm:h-5"
+            />
+            <span className="absolute -top-1 -right-1 w-3.5 sm:w-4 h-3.5 sm:h-4 bg-red-500 text-white text-[8px] sm:text-[10px] flex items-center justify-center rounded-full">
+              1
+            </span>
+          </button>
+          {showMessages && (
+            <div
+              className="absolute right-0 top-full mt-2 w-[16rem] sm:w-[20rem] bg-white rounded-lg shadow-lg py-3 px-3 sm:py-4 sm:px-4 z-50"
+            >
+              <div className="text-[#6B047C] font-medium mb-2 text-sm whitespace-nowrap">
+                Messages
+              </div>
+              <div className="space-y-2 text-sm whitespace-normal break-words">
+                <div>
+                  Message item 1 with potentially lengthy text that needs wrapping.
+                </div>
+                <div>
+                  Message item 2 with additional details that should not overflow.
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Profile Image */}
+        <img
+          src="/Frame 106.png"
+          alt="Profile"
+          className="w-7 sm:w-8 h-7 sm:h-8 rounded-lg object-cover"
+        />
+
+        {/* Quick Actions Icon */}
+        <div ref={quickActionsRef} className="relative">
+          <button
+            className="hidden sm:flex items-center gap-1.5 sm:gap-2 border border-[#6B047C] text-[#6B047C] text-xs sm:text-sm font-medium px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-[#F9F5FA] transition-colors"
+            onClick={toggleQuickActions}
+          >
+            <span>Quick actions</span>
+            <svg
+              className={`w-4 h-4 transform transition-transform ${showQuickActions ? "rotate-180" : ""}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+          {showQuickActions && (
+            <div
+              className="absolute right-0 top-full mt-2 w-[16rem] sm:w-[18rem] md:w-[20rem] bg-white rounded-lg shadow-lg py-2 px-2 sm:py-3 sm:px-3 md:py-4 md:px-4 z-50"
+            >
+              <div className="space-y-2 text-sm whitespace-normal break-words">
+                {/* Profile Link */}
+                <div className="flex items-center gap-3 p-2 hover:bg-[#F9F5FA] rounded-lg cursor-pointer group">
+                  <img
+                    src="/Frame 106.png"
+                    alt="Profile"
+                    className="w-7 sm:w-8 h-7 sm:h-8 rounded-lg object-cover"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-[#1A011E] group-hover:text-[#6B047C] font-medium transition-colors whitespace-nowrap">
+                      Wisdom Umanah
+                    </span>
+                    <span className="text-[#808080] group-hover:text-[#6B047C] transition-colors">
+                      My profile
+                    </span>
+                  </div>
+                </div>
+                {[
+                  { label: "Dispute", icon: "/Frame 1000007971.svg" },
+                  { label: "Help and support", icon: "/Frame 1000007971 (1).svg" },
+                  { label: "Settings", icon: "/Frame 1000007971 (3).svg" },
+                  { label: "Log out", icon: "/Frame 1000007971.svg" },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 p-2 hover:bg-[#F9F5FA] rounded-lg cursor-pointer group"
+                  >
+                    <img
+                      src={item.icon}
+                      alt={item.label}
+                      className="w-8 h-8 p-2 bg-[#F2F2F2] rounded-lg"
+                    />
+                    <span className="text-[#808080] group-hover:text-[#6B047C] transition-colors whitespace-normal break-words">
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
   );
 };
+
+export default Header;
